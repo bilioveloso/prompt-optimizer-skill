@@ -33,6 +33,15 @@ If it is [guess], it is a candidate for deletion, not a requirement.
    clarifying question per response, and never one you could answer by reading
    a file.
 
+Two failures the six slots do not catch. Check for both:
+- COMPOUND — several asks bundled in one sentence. Serving the first and
+  dropping the rest is the most common way to fail a prompt. Enumerate them and
+  answer every one, or say which you are deferring.
+- STATED SOLUTION — the prompt names a fix the user guessed at, and the real
+  problem is underneath it. "Add a cache to this endpoint" may mean "this
+  endpoint is slow". Solve the problem; treat their fix as a strong suggestion,
+  not a constraint. The one case where you should not simply comply.
+
 Calibration:
 - Do not upgrade a passing mention into a requirement. Someone naming a library
   once wants it considered, not mandated.
