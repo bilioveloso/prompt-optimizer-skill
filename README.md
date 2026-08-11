@@ -52,10 +52,11 @@ check happen every turn.
 | File | Loaded when | Cost |
 |---|---|---|
 | `trigger.md` | every prompt, via the hook | ~84 tokens |
-| `rubric.md` | only when the prompt is actually unclear | ~810 tokens |
-| `SKILL.md` | model decides it's relevant | ~580 tokens |
+| `rubric.md` | only when the prompt is actually unclear | ~1010 tokens |
+| `SKILL.md` | model decides it's relevant | ~700 tokens |
 | `explicit.md` | only on "rewrite my prompt" | ~900 tokens |
 | `eval.md` | never, by the model — it's for you | — |
+| `check.sh` | never — run it yourself after edits | — |
 
 ## Uninstall
 
@@ -66,13 +67,17 @@ always-on path but keep `/prompt-optimizer` on demand, remove the hook only.
 ## Why the hook is a pointer, not the payload
 
 Hook output is appended per turn and **stays in the transcript**. It is not a
-one-time cost — inject 810 tokens on every prompt and a 40-turn session carries
-~32k tokens of byte-identical repetition, none of it cached.
+one-time cost — inject the full rubric on every prompt and a 40-turn session
+carries ~40k tokens of byte-identical repetition, none of it cached.
 
 So the hot path holds an 84-token pointer, and the rubric loads only when a
-prompt actually needs it. Same session: ~3.4k instead of ~32k, a 90% cut, with
-the deterministic trigger preserved — the hook still fires every turn, it just
-carries a pointer instead of a payload.
+prompt actually needs it. Same session: ~3.4k of triggers plus a rubric load or
+two, call it ~5k against ~40k — a ~87% cut, with the deterministic trigger
+preserved. The hook still fires every turn; it just carries a pointer instead of
+a payload.
+
+Run `./check.sh` after editing any of these files — the numbers in the table
+above drifted 25% before that check existed.
 
 The general rule, which applies to any hook you write: `UserPromptSubmit` is for
 content that *changes* per turn — git status, changed files, current time.
