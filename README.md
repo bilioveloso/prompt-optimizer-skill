@@ -2,9 +2,11 @@
 
 A generic prompt-optimizer skill for Claude Code, Junie CLI, and agentic platforms.
 
-It does not rewrite your prompt with a second model call. It injects a six-slot
-rubric — deliverable, scope, anchors, constraints, check, ambiguities — that the
-agent fills in silently before acting. Zero added latency, zero extra API calls.
+It does not rewrite your prompt with a second model call. A hook puts an
+84-token check on every turn; when a prompt is actually unclear, that pulls in a
+six-slot rubric — deliverable, scope, anchors, constraints, check, ambiguities —
+which the agent fills in silently before acting. Zero added latency, zero extra
+API calls, and near-zero cost on the prompts that don't need it.
 
 ## Install
 
@@ -21,7 +23,7 @@ prompt, output is injected as context:
         "hooks": [
           {
             "type": "command",
-            "command": "cat ~/path/to/prompt-optimizer-skill/rubric.md"
+            "command": "cat ~/path/to/prompt-optimizer-skill/trigger.md"
           }
         ]
       }
@@ -30,7 +32,9 @@ prompt, output is injected as context:
 }
 ```
 
-Windows without Git Bash: use `type C:\path\to\prompt-optimizer-skill\rubric.md`.
+Windows without Git Bash: use `type C:\path\to\prompt-optimizer-skill\trigger.md`.
+Shell-agnostic (works under both cmd and bash):
+`node -p "require('fs').readFileSync('C:/path/to/trigger.md','utf8')"`
 
 **On demand.** Symlink or copy the folder into `~/.claude/skills/prompt-optimizer/`
 and invoke it with `/prompt-optimizer`, or let the model trigger it on vague prompts.
@@ -42,13 +46,27 @@ this prompt for me" as an explicit request.
 
 | File | Loaded when | Cost |
 |---|---|---|
-| `rubric.md` | every prompt, via the hook | ~450 tokens |
-| `SKILL.md` | model decides it's relevant | ~200 tokens |
-| `explicit.md` | only on "rewrite my prompt" | ~700 tokens |
+| `trigger.md` | every prompt, via the hook | ~84 tokens |
+| `rubric.md` | only when the prompt is actually unclear | ~810 tokens |
+| `SKILL.md` | model decides it's relevant | ~580 tokens |
+| `explicit.md` | only on "rewrite my prompt" | ~900 tokens |
 
-The split is deliberate. `rubric.md` is on the hot path so it stays terse;
-the failure taxonomy and worked examples live in `explicit.md` and cost
-nothing until someone actually asks for a rewrite.
+## Why the hook is a pointer, not the payload
+
+Hook output is appended per turn and **stays in the transcript**. It is not a
+one-time cost — inject 810 tokens on every prompt and a 40-turn session carries
+~32k tokens of byte-identical repetition, none of it cached.
+
+So the hot path holds an 84-token pointer, and the rubric loads only when a
+prompt actually needs it. Same session: ~3.4k instead of ~32k, a 90% cut, with
+the deterministic trigger preserved — the hook still fires every turn, it just
+carries a pointer instead of a payload.
+
+The general rule, which applies to any hook you write: `UserPromptSubmit` is for
+content that *changes* per turn — git status, changed files, current time.
+Static text belongs in the cached prefix (`CLAUDE.md`, system prompt) or behind
+an on-demand load. Putting a constant on the per-turn path pays for it once per
+turn forever.
 
 ## Other platforms
 
@@ -72,9 +90,10 @@ this, or did I decide it?*
 **Written as an injected reminder, not a command.** Anthropic's turn-injected
 reminders open by conceding they are probably irrelevant and inviting the model
 to ignore them, and they forbid the model from ever referencing the injection.
-`rubric.md` runs on literally every prompt, so it does both. Without the
-never-mention rule you get "Based on your prompt, I understand you want…" on
-every turn — which is why that phrase is now on an explicit forbidden list.
+`trigger.md` runs on literally every prompt, so it does both in 84 tokens, and
+`rubric.md` repeats them. Without the never-mention rule you get "Based on your
+prompt, I understand you want…" on every turn — which is why that phrase is now
+on an explicit forbidden list.
 
 **Specificity matching.** One mention earns consideration, not a mandate — the
 same rule that stops a single stated preference becoming a persistent label.
