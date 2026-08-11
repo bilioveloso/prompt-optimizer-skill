@@ -50,6 +50,13 @@ this prompt for me" as an explicit request.
 | `rubric.md` | only when the prompt is actually unclear | ~810 tokens |
 | `SKILL.md` | model decides it's relevant | ~580 tokens |
 | `explicit.md` | only on "rewrite my prompt" | ~900 tokens |
+| `eval.md` | never, by the model — it's for you | — |
+
+## Uninstall
+
+Delete the `UserPromptSubmit` block from `~/.claude/settings.json` and remove
+`~/.claude/skills/prompt-optimizer/`. Nothing else is touched. To disable the
+always-on path but keep `/prompt-optimizer` on demand, remove the hook only.
 
 ## Why the hook is a pointer, not the payload
 
@@ -116,5 +123,26 @@ can't leave a prompt alone is a downgrade.** Most prompts people actually type
 are fine. The value is concentrated in a few failure modes — unresolved
 referents, bundled asks, and solutions stated in place of problems — so the
 skill targets those and returns everything else untouched.
+
+That is why `eval.md` spends six of sixteen cases on prompts that must produce
+*no* optimizer behavior at all, and why a run that scores well on vague prompts
+while failing controls should be treated as a regression.
+
+## Two taxonomies, on purpose
+
+`rubric.md` has six slots; `explicit.md` has seven failures. They are not
+duplicates and should not be merged. The slots are **constructive** — what a
+complete spec contains, used when building one silently. The failures are
+**diagnostic** — what is wrong with a given prompt, used when rewriting one on
+request. Five of them correspond; compound and stated-solution appear in the
+rubric's calibration block because they are diagnoses without a matching slot.
+
+Change one and check the other.
+
+## Status
+
+Working and installed, but unmeasured — `eval.md` has never been run. Every
+claim above is reasoned from the source techniques, not demonstrated. Treat the
+design notes as hypotheses with a test plan attached.
 
 MIT.

@@ -15,6 +15,14 @@ line by where it came from:
 The gate for every line: **did the user actually say this, or did I decide it?**
 If it is [guess], it is a candidate for deletion, not a requirement.
 
+First, though — is this a follow-up? "still broken", "no, the other one",
+"revert that", "now do the same for X", "why?". These carry no spec of their
+own and are not underspecified; they inherit the previous turn's. Do not build
+a fresh spec for them. Carry the last one forward and change only what this
+message changes. Treating a follow-up as a new request is the worst failure
+available here: it discards established context and restarts work the user
+thought was in progress.
+
 1. DELIVERABLE — the artifact and its form. Unstated → the smallest one that
    satisfies the request. [guess]
 2. SCOPE — what is in, and what is out. A request to fix X is not a licence to
