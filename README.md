@@ -10,10 +10,16 @@ API calls, and near-zero cost on the prompts that don't need it.
 
 ## Install
 
-Clone anywhere, then pick one:
+Both steps are required. The hook carries a *pointer*, so it does nothing
+without the skill files it points at.
 
-**Always-on (recommended).** Add to `~/.claude/settings.json` — fires on every
-prompt, output is injected as context:
+**1. Install the files.** Copy or symlink the folder to
+`~/.claude/skills/prompt-optimizer/`. This path is not arbitrary —
+`trigger.md` refers to it directly. Installing elsewhere means editing the
+path inside `trigger.md` to match.
+
+**2. Add the hook** to `~/.claude/settings.json`, so the check fires on every
+prompt rather than only when the model happens to think the skill is relevant:
 
 ```json
 {
@@ -36,11 +42,10 @@ Windows without Git Bash: use `type C:\path\to\prompt-optimizer-skill\trigger.md
 Shell-agnostic (works under both cmd and bash):
 `node -p "require('fs').readFileSync('C:/path/to/trigger.md','utf8')"`
 
-**On demand.** Symlink or copy the folder into `~/.claude/skills/prompt-optimizer/`
-and invoke it with `/prompt-optimizer`, or let the model trigger it on vague prompts.
-
-Both can coexist. The hook covers the implicit path; the skill covers "optimize
-this prompt for me" as an explicit request.
+Skipping step 2 still works, just non-deterministically: the skill's
+description keeps it available to `/prompt-optimizer` and to the model's own
+judgment, but nothing guarantees it gets consulted. The hook is what makes the
+check happen every turn.
 
 ## Files
 
@@ -147,8 +152,12 @@ Change one and check the other.
 
 ## Status
 
-Working and installed, but unmeasured — `eval.md` has never been run. Every
-claim above is reasoned from the source techniques, not demonstrated. Treat the
-design notes as hypotheses with a test plan attached.
+Run once, against the nine real prompts of the session that built it: 8/9, with
+one scope failure that produced a new calibration rule. See `eval.md`.
+
+That is one self-scored session in one configuration — enough to have caught a
+real defect, not enough to support the design notes above, which remain
+reasoning from source technique rather than demonstrated results. The `off` and
+`payload` columns are unrun.
 
 MIT.

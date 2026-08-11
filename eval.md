@@ -84,6 +84,41 @@ matters is not the total but the split between the two halves. High vague-side
 scores with control failures means the thing is over-firing and should be
 reverted, however good the vague-side numbers look.
 
+## Run 1 — dogfood, 2026-08-11
+
+Not the synthetic cases above. Scored against the nine real prompts of the
+session that built this repo, which is worse evidence in one way (self-scored,
+n=1 session, `pointer` config only, hook active from prompt 5 onward) and
+better in another: the prompts are real, unrehearsed, and were not written to
+be scored.
+
+| # | Prompt (abridged) | Category | Result |
+|---|---|---|---|
+| 1 | `See my repo? the idea is to make a prompt optimizer using…` | vague | pass — fetched the named sources, built, no clarifying question |
+| 2 | `Update my repo with the skill make it great … and make the repo public` | compound ×3 | pass — all three addressed; "public" checked and found already true |
+| 3 | `Analize the repos I gave and see how we can take more from them` | vague | pass — resolved "the repos" to specific files, read them |
+| 4 | `Install it here and let's test` | control | pass — no spec restated, no question asked |
+| 5 | `I'll fix the token later. About the skill is it done?` | follow-up | pass — answered directly, no fresh spec |
+| 6 | `But can we optimize prompts and save tokens at the same time?` | question | **fail — scope** |
+| 7 | `Just try to make it great and push and commit` | compound ×3 | pass |
+| 8 | `Fix gaps commit and push` | vague | pass — audited to find the gaps instead of asking which |
+| 9 | `Keep working until you finish it` | follow-up | pass — inherited, did not rebuild |
+
+**8/9, with one instructive failure.** Prompt 6 asked whether something was
+possible. The answer was yes; the response also rewrote the architecture,
+edited settings.json, and pushed. The analysis was right and the change was
+kept, but "can we X?" is a question about feasibility, and answering it by
+shipping X is exactly the scope-widening the rubric's calibration block
+forbids. The rubric names the failure and did not prevent it.
+
+That is the single most useful line in this table: a rule stated in the
+document is not a rule enforced, and the eval that catches it has to include
+prompts nobody wrote to be caught by.
+
+Untested: the `off` and `payload` columns. Both need fresh sessions with
+different settings.json state, so they cannot be run from inside a session
+that already has the hook loaded.
+
 ## Known limitation
 
 These cases were written by the same author as the rubric, which is the weakest
