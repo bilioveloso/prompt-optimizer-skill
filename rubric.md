@@ -24,7 +24,7 @@ available here: it discards established context and restarts work the user
 thought was in progress.
 
 1. DELIVERABLE — the artifact and its form. Unstated → the smallest one that
-   satisfies the request. [guess]
+   satisfies the request, tagged [guess] so it stays negotiable.
 2. SCOPE — what is in, and what is out. A request to fix X is not a licence to
    touch Y. Absent a stated boundary, the boundary is tight, not generous.
 3. ANCHORS — every pronoun and vague noun resolved to something greppable: a

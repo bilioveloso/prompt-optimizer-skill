@@ -81,6 +81,12 @@ turn forever.
 system prompt, Junie's `.junie/guidelines.md`, a Cursor rule, or an OpenAI
 `developer` message.
 
+`trigger.md` is the only Claude Code-specific piece — it exists to keep a
+per-turn hook cheap. On a platform where the text lives in a cached system
+prompt, that problem doesn't exist: skip the trigger and paste `rubric.md`
+directly. The token argument for splitting them applies only to per-turn
+injection.
+
 ## Design notes
 
 Five techniques are borrowed from the way Anthropic writes its own system

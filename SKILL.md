@@ -1,6 +1,6 @@
 ---
 name: prompt-optimizer
-description: Turn a vague or underspecified request into a concrete spec (deliverable, scope, anchors, constraints, check, ambiguities) before acting on it, or rewrite a prompt on request. Use when a prompt is ambiguous, when "it"/"that"/"the thing" has no clear referent, when several asks are bundled into one sentence, or when the user says "optimize this prompt", "make this prompt better", "rewrite this for Claude", "why isn't this prompt working". Runs automatically on every turn if the UserPromptSubmit hook is installed.
+description: Turn a vague or underspecified request into a concrete spec (deliverable, scope, anchors, constraints, check, ambiguities) before acting on it, or rewrite a prompt on request. Use when a prompt is ambiguous, when "it"/"that"/"the thing" has no clear referent, when several asks are bundled into one sentence, when it names a fix instead of the problem underneath it, or when the user says "optimize this prompt", "make this prompt better", "rewrite this for Claude", "why isn't this prompt working". Do NOT use for prompts that are already clear, or for follow-ups like "still broken" or "revert that" — those inherit the previous turn's context and need no spec.
 ---
 
 # Prompt optimizer
@@ -11,8 +11,14 @@ Apply [rubric.md](rubric.md): fill the six slots silently, then do the work.
 The user sees results, not the spec. State assumptions inline, one line each,
 only where they change what gets built.
 
-This is the mode the `UserPromptSubmit` hook covers. If the hook is installed,
-the rubric is already in context and this file adds nothing — do the work.
+The hook does not carry the rubric — it carries an 84-token pointer that sends
+you here. So `rubric.md` must actually be read when a prompt is unclear; it will
+not already be in context.
+
+**Follow-ups are exempt.** "still broken", "revert that", "no, the other one",
+"why?" inherit the previous turn's spec and never get a new one. Most prompts in
+a working session are follow-ups — building a fresh spec for them discards
+context and restarts work already in progress.
 
 ## Explicit mode
 
