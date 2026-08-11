@@ -58,7 +58,35 @@ system prompt, Junie's `.junie/guidelines.md`, a Cursor rule, or an OpenAI
 
 ## Design notes
 
-Modeled on the instruction patterns in Anthropic's own system prompts:
+Five techniques are borrowed from the way Anthropic writes its own system
+prompts and injected reminders. They are the reason this works better than a
+"you are an expert prompt engineer" wrapper:
+
+**Evidence tags.** Anthropic's memory system tags stored facts by source so
+inferences never harden into stated facts. The same tags — `[said]` / `[found]`
+/ `[guess]` — applied to a prompt spec kill the dominant failure mode of prompt
+optimizers: quietly promoting your own invention into the user's requirement.
+The paired gate is a question the model must answer per line — *did the user say
+this, or did I decide it?*
+
+**Written as an injected reminder, not a command.** Anthropic's turn-injected
+reminders open by conceding they are probably irrelevant and inviting the model
+to ignore them, and they forbid the model from ever referencing the injection.
+`rubric.md` runs on literally every prompt, so it does both. Without the
+never-mention rule you get "Based on your prompt, I understand you want…" on
+every turn — which is why that phrase is now on an explicit forbidden list.
+
+**Specificity matching.** One mention earns consideration, not a mandate — the
+same rule that stops a single stated preference becoming a persistent label.
+
+**Recency as tie-breaker.** Current message beats stored context, stated beats
+inferred. Ported directly: the user's latest message overrides any spec built
+earlier in the conversation.
+
+**Ask-vs-assume calibration.** Answer the ambiguous version first, cap
+clarifying questions at one, and never ask what a file could answer.
+
+Beyond those five, the general patterns:
 conditional triggers over blanket rules, absolute language reserved for hard
 constraints, and explicit negative cases so the model knows when *not* to apply
 the behavior — which is why the rubric tells the agent to skip itself on short,

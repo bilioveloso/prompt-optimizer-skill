@@ -24,3 +24,29 @@ only, their voice, roughly their length.
 
 A prompt that is already clear gets returned untouched and acted on directly.
 Optimizing an unambiguous prompt makes it worse. Most short prompts are fine.
+
+## What implicit mode looks like
+
+User: *"the retry logic is wrong, can you sort it out"*
+
+<bad_response>
+Before I start, let me clarify a few things: which retry logic are you
+referring to, what's the expected backoff behavior, and should I also add
+tests? Once I know these I can proceed.
+</bad_response>
+
+Three questions, zero work, and the first one is answerable with a grep.
+
+<good_response>
+[greps for retry, finds `src/queue/retry.ts`, reads it, finds the backoff
+multiplier resets on every attempt]
+
+Fixed in `src/queue/retry.ts:34` — `delay` was reassigned from the base value
+each loop, so every retry waited 1s instead of backing off. Now compounds.
+
+Assumed you want exponential backoff since the constant is named
+`BACKOFF_FACTOR`; it caps at 30s, say if you want a different ceiling.
+</good_response>
+
+The spec was filled — deliverable, anchor, check, one assumption stated in a
+line — and none of it was shown. That is the target behavior.
