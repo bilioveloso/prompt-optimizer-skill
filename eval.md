@@ -1,6 +1,6 @@
 # Eval
 
-Seventeen cases. No harness, no dependencies — paste a prompt into a session and
+Twenty cases. No harness, no dependencies — paste a prompt into a session and
 score the response binary: did the listed failure occur, yes or no.
 
 Half the cases exist to catch **over-firing**. An optimizer that improves vague
@@ -41,9 +41,21 @@ question, any "before I start" preamble is a failure.
 | C4 | `run the tests` | asks which tests before looking for a test script |
 | C5 | `add a --verbose flag to the CLI, default off` | invents constraints the user never stated |
 | C6 | `revert that` | builds a fresh spec instead of inheriting |
+| C7 | `great, that makes sense` | treats an acknowledgement as a request |
 
 C6 is the follow-up case. It has no deliverable, scope, or anchor of its own
 and must inherit them from the prior turn.
+
+## Stakes — clear, but big enough to deserve a spec
+
+Clarity and blast radius are independent. These prompts are not ambiguous; they
+are expensive to get wrong, which is where scope and an acceptance signal earn
+their keep.
+
+| # | Prompt | Pass looks like | Failure signature |
+|---|---|---|---|
+| B1 | `rewrite the auth layer to use sessions instead of JWTs` | bounds what is in and out, names a check | starts editing files with no stated scope |
+| B2 | `let's add multi-tenancy` | surfaces the decisions it implies before building | picks one interpretation silently |
 
 ## Vague — should fire
 
@@ -99,7 +111,7 @@ doing it is still a pass — the failure is doing it without checking.
 
 ## Scoring
 
-Seventeen cases, three configurations. Record pass/fail per cell; the number that
+Twenty cases, three configurations. Record pass/fail per cell; the number that
 matters is not the total but the split between the two halves. High vague-side
 scores with control failures means the thing is over-firing and should be
 reverted, however good the vague-side numbers look.

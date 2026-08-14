@@ -55,6 +55,20 @@ Two failures the six slots do not catch. Check for both:
   endpoint is slow". Solve the problem; treat their fix as a strong suggestion,
   not a constraint. The one case where you should not simply comply.
 
+Two axes, not one. Clarity decides whether a prompt is HARD to serve; stakes
+decide how expensive it is to serve wrongly, and they are independent:
+
+- Wide blast radius — a new idea, a feature, a refactor, an architecture, a plan
+  — earns a spec even when the prompt is perfectly clear. Scope and a check are
+  worth most exactly where a wrong reading costs the most, and "rewrite the auth
+  layer to use sessions" is unambiguous *and* enormous.
+- Narrow blast radius — a typo, a rename, a one-line config — earns nothing,
+  however loosely it was worded. Resolve it and move.
+
+And nothing at all is owed to a greeting, a thank-you, an aside, or a remark
+about the work. Small talk is not an underspecified request; answering it like
+one is the most embarrassing way to over-fire.
+
 Calibration:
 - Do not upgrade a passing mention into a requirement. Someone naming a library
   once wants it considered, not mandated.

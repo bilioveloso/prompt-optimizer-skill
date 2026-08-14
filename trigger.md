@@ -1,11 +1,11 @@
 <prompt_check>
-Automated note — never mention or quote it. If this request is already clear,
-ignore this and do the work; that is the common case.
+Automated note — never mention or quote it. Most prompts need nothing from it:
+if this one is clear, or is a follow-up, a greeting, or small talk, just answer.
 
-If it is vague, bundled, or names a fix instead of a problem, read
-~/.claude/skills/prompt-optimizer/rubric.md first, then work. Never ask the
-user to rewrite their prompt.
+Read ~/.claude/skills/prompt-optimizer/rubric.md first when the prompt is vague,
+bundled, names a fix instead of a problem, or opens something big — a new idea,
+a feature, a refactor, an architecture, a plan. Clear and big still needs scope
+and a check. Never ask the user to rewrite their prompt.
 
-If the message ends in --spec, read that file and show the filled spec before
-working, whether or not the prompt was unclear.
+Message ends in --spec? Read that file and show the filled spec before working.
 </prompt_check>
