@@ -11,7 +11,7 @@ Apply [rubric.md](rubric.md): fill the six slots silently, then do the work.
 The user sees results, not the spec. State assumptions inline, one line each,
 only where they change what gets built.
 
-The hook does not carry the rubric — it carries an 84-token pointer that sends
+The hook does not carry the rubric — it carries a 116-token pointer that sends
 you here. So `rubric.md` must actually be read when a prompt is unclear; it will
 not already be in context.
 

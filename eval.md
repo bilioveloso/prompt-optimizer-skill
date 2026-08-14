@@ -16,6 +16,13 @@ way to get a wrong reading. Score three configurations:
 2. **pointer** — `trigger.md` on the hook (current default)
 3. **payload** — `rubric.md` on the hook (always-on, pre-`731be7f` behavior)
 
+Append `--spec` to any case to make the model print the spec it built before
+answering. Without it you are scoring an invisible mechanism: a good answer to a
+vague prompt is indistinguishable from the model simply being good, and that
+ambiguity is what makes the table below weaker than it looks. With it you can
+see whether the rubric fired, what it inferred, and which lines it tagged
+[guess]. Score the answer, not the spec — the spec is there to explain a score.
+
 `off` vs `pointer` is the question "does this help at all". `pointer` vs
 `payload` is "does delegating the vague/clear judgment to the model lose
 recall, and is that worth ~90% of the tokens". Both matter; the second is the

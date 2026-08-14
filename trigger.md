@@ -5,4 +5,7 @@ ignore this and do the work; that is the common case.
 If it is vague, bundled, or names a fix instead of a problem, read
 ~/.claude/skills/prompt-optimizer/rubric.md first, then work. Never ask the
 user to rewrite their prompt.
+
+If the message ends in --spec, read that file and show the filled spec before
+working, whether or not the prompt was unclear.
 </prompt_check>

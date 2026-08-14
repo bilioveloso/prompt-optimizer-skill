@@ -3,7 +3,7 @@
 A generic prompt-optimizer skill for Claude Code, Junie CLI, and agentic platforms.
 
 It does not rewrite your prompt with a second model call. A hook puts an
-84-token check on every turn; when a prompt is actually unclear, that pulls in a
+116-token check on every turn; when a prompt is actually unclear, that pulls in a
 six-slot rubric — deliverable, scope, anchors, constraints, check, ambiguities —
 which the agent fills in silently before acting. Zero added latency, zero extra
 API calls, and near-zero cost on the prompts that don't need it.
@@ -57,12 +57,32 @@ check happen every turn.
 
 | File | Loaded when | Cost |
 |---|---|---|
-| `trigger.md` | every prompt, via the hook | ~84 tokens |
-| `rubric.md` | only when the prompt is actually unclear | ~1120 tokens |
+| `trigger.md` | every prompt, via the hook | ~116 tokens |
+| `rubric.md` | only when the prompt is actually unclear | ~1180 tokens |
 | `SKILL.md` | model decides it's relevant | ~700 tokens |
 | `explicit.md` | only on "rewrite my prompt" | ~900 tokens |
 | `eval.md` | never, by the model — it's for you | — |
 | `check.sh` | never — run it yourself after edits | — |
+
+## Seeing it work
+
+The skill is designed to be invisible, which makes it hard to evaluate: a good
+answer to a vague prompt looks the same whether the rubric fired or the model
+was just having a good day.
+
+End any message with `--spec` and it prints the spec it built — six slots, each
+line tagged `[said]` / `[found]` / `[guess]` — before doing the work as normal.
+
+```
+the retry logic is wrong, can you sort it out --spec
+```
+
+This is what makes `eval.md` runnable rather than a matter of opinion. It costs
+~13 tokens on the per-turn path, taking the trigger from 84 to 116. That is a
+38% rise on the hot path and it is the one thing here bought with real budget:
+about 1.2k extra over a 40-turn session, against a payload approach's 40k. If
+you would rather not pay it, delete the last two lines of `trigger.md` — the
+rest of the skill does not depend on them.
 
 ## Uninstall
 
@@ -76,9 +96,9 @@ Hook output is appended per turn and **stays in the transcript**. It is not a
 one-time cost — inject the full rubric on every prompt and a 40-turn session
 carries ~40k tokens of byte-identical repetition, none of it cached.
 
-So the hot path holds an 84-token pointer, and the rubric loads only when a
-prompt actually needs it. Same session: ~3.4k of triggers plus a rubric load or
-two, call it ~5k against ~40k — a ~87% cut, with the deterministic trigger
+So the hot path holds a 116-token pointer, and the rubric loads only when a
+prompt actually needs it. Same session: ~4.6k of triggers plus a rubric load or
+two, call it ~7k against ~40k — a ~83% cut, with the deterministic trigger
 preserved. The hook still fires every turn; it just carries a pointer instead of
 a payload.
 
@@ -122,7 +142,7 @@ this, or did I decide it?*
 **Written as an injected reminder, not a command.** Anthropic's turn-injected
 reminders open by conceding they are probably irrelevant and inviting the model
 to ignore them, and they forbid the model from ever referencing the injection.
-`trigger.md` runs on literally every prompt, so it does both in 84 tokens, and
+`trigger.md` runs on literally every prompt, so it does both in 116 tokens, and
 `rubric.md` repeats them. Without the never-mention rule you get "Based on your
 prompt, I understand you want…" on every turn — which is why that phrase is now
 on an explicit forbidden list.

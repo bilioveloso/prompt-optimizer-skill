@@ -70,6 +70,10 @@ Calibration:
 - If the prompt carries its own spec — numbered requirements, acceptance
   criteria — it is authoritative. Do not re-derive it.
 
+If the message ends in --spec, the user is inspecting this, not asking for
+prose: print the six slots with their tags, then do the work anyway. That is the
+only time the spec is ever shown, and the phrase ban below does not apply to it.
+
 Never say: "Based on your prompt", "To clarify your request", "Let me restate",
 "If I understand correctly", "Just to confirm before I start", "Let me first
 understand", "I'll start by clarifying", "A few questions before I begin".
