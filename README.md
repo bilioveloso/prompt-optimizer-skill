@@ -64,6 +64,38 @@ check happen every turn.
 | `eval.md` | never, by the model — it's for you | — |
 | `check.sh` | never — run it yourself after edits | — |
 
+## Installing it per-project instead
+
+To ship the check with a repo, so everyone working on it gets the same check
+rather than it being a property of one laptop: vendor the folder to
+`<repo>/.claude/skills/prompt-optimizer/` and put this in
+`<repo>/.claude/settings.json`.
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const d=process.env.CLAUDE_PROJECT_DIR;const p=d+'/.claude/skills/prompt-optimizer/';process.stdout.write(require('fs').readFileSync(p+'trigger.md','utf8').split('~/.claude/skills/prompt-optimizer/').join(p))\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+It reads `trigger.md` and rewrites the `~/.claude/...` pointer to wherever the
+repo actually sits, at read time. So **the vendored files stay byte-identical to
+this repo** — no forked path, nothing to drift, and updating is a plain copy
+with no merge. It also works on a colleague's machine, on CI, and on Windows,
+none of which share your home directory.
+
+Both installs can coexist; the project hook simply runs in that repo.
+
 ## Seeing it work
 
 The skill is designed to be invisible, which makes it hard to evaluate: a good
