@@ -94,7 +94,13 @@ always-on path but keep `/prompt-optimizer` on demand, remove the hook only.
 
 Hook output is appended per turn and **stays in the transcript**. It is not a
 one-time cost — inject the full rubric on every prompt and a 40-turn session
-carries ~40k tokens of byte-identical repetition, none of it cached.
+carries ~40k tokens of byte-identical repetition.
+
+Prompt caching softens the *bill* for that but not the problem. Turn N's
+injection lands in turn N+1's cached prefix, so it is re-read at roughly a tenth
+of input price; only the newest copy is a fresh write. What caching cannot give
+back is the **context window**. Those 40k are occupied whether they were cheap
+to re-read or not, and the window is the resource you actually run out of.
 
 So the hot path holds a 116-token pointer, and the rubric loads only when a
 prompt actually needs it. Same session: ~4.6k of triggers plus a rubric load or
