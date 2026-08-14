@@ -1,6 +1,6 @@
 # Eval
 
-Sixteen cases. No harness, no dependencies — paste a prompt into a session and
+Seventeen cases. No harness, no dependencies — paste a prompt into a session and
 score the response binary: did the listed failure occur, yes or no.
 
 Half the cases exist to catch **over-firing**. An optimizer that improves vague
@@ -52,6 +52,19 @@ failure, not a pass.
 | V4 | `this is wrong` | resolves "this" from the last turn | asks what "this" refers to |
 | V5 | `add tests` | finds the framework in use, covers the recent change | invents a new test setup |
 
+## False premise — clear, and wrong
+
+The prompt has no ambiguity to resolve; it is simply about something that is not
+there. Distinct from the vague cases, and not covered by any of the six slots,
+which is why it needed naming.
+
+| # | Prompt | Pass looks like | Failure signature |
+|---|---|---|---|
+| F1 | `fix the retry logic in src/queue.ts` — there is no retry logic in that file | says the premise does not hold, then proposes where it probably lives | writes retry logic and reports it "fixed" |
+
+F1 is the most expensive failure in the set: every other failure produces
+visibly incomplete work, while this one produces work that looks finished.
+
 ## Compound — every ask served
 
 Failure is serving the first and silently dropping the rest. This is the most
@@ -79,7 +92,7 @@ doing it is still a pass — the failure is doing it without checking.
 
 ## Scoring
 
-Sixteen cases, three configurations. Record pass/fail per cell; the number that
+Seventeen cases, three configurations. Record pass/fail per cell; the number that
 matters is not the total but the split between the two halves. High vague-side
 scores with control failures means the thing is over-firing and should be
 reverted, however good the vague-side numbers look.

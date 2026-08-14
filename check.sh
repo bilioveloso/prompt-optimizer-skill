@@ -28,5 +28,31 @@ for f in trigger.md rubric.md SKILL.md explicit.md; do
   fi
 done
 
+# 3. The hook must point at a file that actually exists.
+#    This is the one failure nobody notices: `cat` on a missing path prints
+#    nothing, the hook contributes nothing, and the skill looks installed while
+#    doing absolutely nothing. Check 1 above validates the pointer INSIDE
+#    trigger.md; this validates the command that loads trigger.md in the first
+#    place. Warn rather than fail — a hookless or non-Claude install is valid.
+settings="$HOME/.claude/settings.json"
+if [ ! -f "$settings" ]; then
+  echo "warn  no ~/.claude/settings.json — skipping hook check"
+elif ! grep -q 'UserPromptSubmit' "$settings"; then
+  echo "warn  no UserPromptSubmit hook — the skill loads only when the model elects to"
+else
+  hooked=$(grep -o "[A-Za-z]:[\/][^\"']*trigger\.md\|~/[^\"']*trigger\.md\|/[^\"']*trigger\.md" "$settings" | head -1)
+  if [ -z "$hooked" ]; then
+    echo "warn  UserPromptSubmit hook found, but no trigger.md path in it"
+  else
+    resolved=$(printf '%s' "$hooked" | sed "s|^~|$HOME|")
+    if [ -f "$resolved" ]; then
+      echo "ok    hook -> $hooked"
+    else
+      echo "FAIL  hook -> $hooked (file missing; the hook is silently doing nothing)"
+      fail=1
+    fi
+  fi
+fi
+
 [ "$fail" -eq 0 ] && echo "PASS" || echo "FAILED"
 exit $fail

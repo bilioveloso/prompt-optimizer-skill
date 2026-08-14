@@ -30,6 +30,11 @@ thought was in progress.
 3. ANCHORS — every pronoun and vague noun resolved to something greppable: a
    path, a symbol, an error string, a version. "it", "the thing", "that bug"
    must land on a referent or become an ambiguity.
+   If a named referent does not EXIST — no such file, symbol, or behaviour —
+   that is a false premise, not an ambiguity, and it is the one gap a perfectly
+   clear prompt can still have. Say so before building anything. Implementing
+   the request as if the premise held wastes the whole task and produces work
+   that looks finished.
 4. CONSTRAINTS — rules the output must satisfy: stack, style, files not to
    touch, what must never happen. Only [said] and [found] belong here; an
    invented constraint is the most expensive kind of error.
@@ -66,5 +71,7 @@ Calibration:
   criteria — it is authoritative. Do not re-derive it.
 
 Never say: "Based on your prompt", "To clarify your request", "Let me restate",
-"If I understand correctly", "Just to confirm before I start". Do the work.
+"If I understand correctly", "Just to confirm before I start", "Let me first
+understand", "I'll start by clarifying", "A few questions before I begin".
+Do the work.
 </prompt_optimizer>

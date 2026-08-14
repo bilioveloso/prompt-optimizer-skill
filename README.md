@@ -42,6 +42,12 @@ Windows without Git Bash: use `type C:\path\to\prompt-optimizer-skill\trigger.md
 Shell-agnostic (works under both cmd and bash):
 `node -p "require('fs').readFileSync('C:/path/to/trigger.md','utf8')"`
 
+**Get that path wrong and nothing tells you.** `cat` on a file that isn't there
+prints nothing, the hook contributes nothing, and the skill sits there looking
+installed while doing exactly nothing on every turn — there is no error to
+notice. Run `./check.sh` after installing: it resolves the path in your
+`settings.json` and says so out loud if it points at nowhere.
+
 Skipping step 2 still works, just non-deterministically: the skill's
 description keeps it available to `/prompt-optimizer` and to the model's own
 judgment, but nothing guarantees it gets consulted. The hook is what makes the
@@ -52,7 +58,7 @@ check happen every turn.
 | File | Loaded when | Cost |
 |---|---|---|
 | `trigger.md` | every prompt, via the hook | ~84 tokens |
-| `rubric.md` | only when the prompt is actually unclear | ~1010 tokens |
+| `rubric.md` | only when the prompt is actually unclear | ~1120 tokens |
 | `SKILL.md` | model decides it's relevant | ~700 tokens |
 | `explicit.md` | only on "rewrite my prompt" | ~900 tokens |
 | `eval.md` | never, by the model — it's for you | — |
@@ -76,8 +82,11 @@ two, call it ~5k against ~40k — a ~87% cut, with the deterministic trigger
 preserved. The hook still fires every turn; it just carries a pointer instead of
 a payload.
 
-Run `./check.sh` after editing any of these files — the numbers in the table
-above drifted 25% before that check existed.
+Run `./check.sh` after editing any of these files, and after installing. It
+asserts the three things that break without saying anything: the pointer inside
+`trigger.md`, the token claims in the table above (which drifted 25% before the
+check existed), and whether the hook in your `settings.json` resolves to a file
+that actually exists.
 
 The general rule, which applies to any hook you write: `UserPromptSubmit` is for
 content that *changes* per turn — git status, changed files, current time.
@@ -140,7 +149,7 @@ are fine. The value is concentrated in a few failure modes — unresolved
 referents, bundled asks, and solutions stated in place of problems — so the
 skill targets those and returns everything else untouched.
 
-That is why `eval.md` spends six of sixteen cases on prompts that must produce
+That is why `eval.md` spends six of seventeen cases on prompts that must produce
 *no* optimizer behavior at all, and why a run that scores well on vague prompts
 while failing controls should be treated as a regression.
 
